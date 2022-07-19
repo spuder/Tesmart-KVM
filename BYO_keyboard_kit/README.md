@@ -2,7 +2,7 @@
 
 The BYO keyboard was a [succesfull kickstarter](https://www.kickstarter.com/projects/painlessprototyping/byo-build-your-own-mechanical-keyboard) for a 6 key or 9 key keyboard
 
-![](./images/schematic.png)
+![](./images/schematic.jpg)
 
 Github: https://github.com/painlessprototyping/byo_keyboard_code
 
