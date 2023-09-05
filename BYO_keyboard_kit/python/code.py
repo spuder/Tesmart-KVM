@@ -23,7 +23,6 @@ keys = (
     (3, 4, 5),
 )
 
-
 keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
 
 kbd = Keyboard(usb_hid.devices)
@@ -45,7 +44,7 @@ uart = busio.UART(board.D1, board.D0, baudrate=9600)
 while True:
     keys = keypad.pressed_keys
     if keys:
-        print(keys)
+        # print(keys)
         if 0 in keys:
             # Switch to PC 1
             text = bytearray([0xAA, 0xBB, 0x03, 0x01, 0x01, 0xEE])
@@ -70,5 +69,4 @@ while True:
             # Change active selected computer in display mode 2
             text = bytearray([0xAA, 0xBB, 0x03, 0x05, 0x01, 0xEE])
             uart.write(text)
-            
-    time.sleep(0.2)
+        time.sleep(0.15)
