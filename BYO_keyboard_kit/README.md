@@ -40,13 +40,3 @@ Once circuit python is running on the board, a new flash device will appear on y
 2. Edit `code.py` on the flash device
 
 The code will load instantly and automatically reboot the micro controller
-
-
-## TODO: Document ir commands
-
-## TODO: Link to serial cable
-
-## TODO: photo of working setup
-
-
-## TODO: Frizting screenshot
