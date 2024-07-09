@@ -1,3 +1,4 @@
+# Write your code here :-)
 import time
 import board
 import digitalio
@@ -7,7 +8,6 @@ import busio
 import adafruit_dotstar as dotstar
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
-from adafruit_hid.keyboard_layout_us import KeyboardLayoutUS
 
 # Initial delay for stable startup
 time.sleep(1)
@@ -27,8 +27,8 @@ AVAILABLE_KEYS = [
     Keycode.FOUR,
     Keycode.FIVE,
     Keycode.SIX,
-    Keycode.SCROLL_LOCK
-] 
+    Keycode.SCROLL_LOCK,
+]
 
 uart = busio.UART(board.D1, board.D0, baudrate=9600)
 dots = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.1)
@@ -37,18 +37,20 @@ colors = {
     "green": (0, 255, 0),
     "blue": (0, 0, 255),
     "purple": (128, 0, 128),
-    "orange": (255, 165, 0)
+    "orange": (255, 165, 0),
 }
 dots[0] = colors["blue"]
 
 primary_display = 0
 secondary_display = 1
 
+
 def send_uart_message(message):
     try:
         uart.write(message)
     except Exception as e:
         print(f"UART Error: {e}")
+
 
 def update_dotstar_color(display):
     color = colors["blue"]
@@ -61,6 +63,7 @@ def update_dotstar_color(display):
     elif display == 3:
         color = colors["purple"]
     dots[0] = color
+
 
 # Main loop
 while True:
