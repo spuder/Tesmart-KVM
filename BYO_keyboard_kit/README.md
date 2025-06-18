@@ -26,13 +26,13 @@ For connecting to a tesmart, use a RS232 to TTL adapter
 
 - [RS232-TTL (Amazon)](https://www.amazon.com/dp/B07BJJ1T5G?psc=1&ref=ppx_yo2ov_dt_b_product_details)
 
-It can be programed with either arduino or micropython. 
-
-Device can be programmed with either python or arduino
+It can be programed with either arduino or micropython
 
 ## Circuit Python
 
-See [these instructions](https://github.com/painlessprototyping/byo_keyboard_code/tree/master/byo_sample_code/circuit_python) for setting up circuit python 7.x on the board
+Install circuit python from here: https://circuitpython.org/board/itsybitsy_m0_express/ and [here](https://learn.adafruit.com/introducing-itsy-bitsy-m0/circuitpython)
+
+Download the library bundle from [here](https://circuitpython.org/libraries)
 
 Once circuit python is running on the board, a new flash device will appear on your desktop. 
 
@@ -40,3 +40,15 @@ Once circuit python is running on the board, a new flash device will appear on y
 2. Edit `code.py` on the flash device
 
 The code will load instantly and automatically reboot the micro controller
+
+
+If you get stuck, See [these instructions](https://github.com/painlessprototyping/byo_keyboard_code/tree/master/byo_sample_code/circuit_python). Note that they reference an older version of cirucit python. 
+
+## Arduino
+
+Install the M0 support in arduino ide
+
+https://learn.adafruit.com/introducing-itsy-bitsy-m0/setup
+
+
+https://www.adafruit.com/product/3727?gad_source=1&gad_campaignid=21079267614&gbraid=0AAAAADx9JvS4iYYIo0PcLfgP7dyre0XuF&gclid=CjwKCAjwpMTCBhA-EiwA_-MsmXy7SJb0eYAJnb5BahNTfbg2n7k2Rd-q0Eh5t8NVS8W5NYYMRWpIBRoClL0QAvD_BwE
