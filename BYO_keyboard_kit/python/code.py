@@ -20,7 +20,7 @@ dots = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.1)
 # Color definitions - optimized values
 COLORS = [
     (100, 0, 0),    # red - display 0
-    (255, 165, 0),  # orange - display 1  
+    (255, 165, 0),  # orange - display 1
     (0, 255, 0),    # green - display 2
     (128, 0, 128),  # purple - display 3
 ]
@@ -54,31 +54,39 @@ def update_led_color():
     dots[0] = COLORS[primary_display]
 
 # Main loop
+last_pressed_keys = []
 last_key_time = 0
 DEBOUNCE_TIME = 0.15
 
 while True:
     pressed_keys = keypad.pressed_keys
-    
-    if pressed_keys and (time.monotonic() - last_key_time) > DEBOUNCE_TIME:
-        key = pressed_keys[0]
-        last_key_time = time.monotonic()
-        
+    now = time.monotonic()
+
+    # Only act on newly pressed keys (not keys held from previous loop)
+    new_keys = [k for k in pressed_keys if k not in last_pressed_keys]
+
+    if new_keys and (now - last_key_time) > DEBOUNCE_TIME:
+        key = new_keys[0]
+        last_key_time = now
+
         if key <= 2:  # Keys 0, 1, 2: Set both displays to same value
             primary_display = key
             secondary_display = key
             update_led_color()
             send_uart_message(key)
-            
+
         elif key == 3:  # Cycle primary display
             primary_display = (primary_display + 1) % 4
+            update_led_color()
             send_uart_message(3)
-            
+
         elif key == 4:  # Cycle secondary display
             secondary_display = (secondary_display + 1) % 4
             send_uart_message(4)
-            
+
         elif key == 5:  # Swap displays
             primary_display, secondary_display = secondary_display, primary_display
             update_led_color()
             send_uart_message(5)
+
+    last_pressed_keys = pressed_keys
