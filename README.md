@@ -3,7 +3,14 @@
 
 ![](https://cdn.shopify.com/s/files/1/0271/3429/6200/products/tesmart-dual-monitor-kvm-switcher-us-plug-tesmart-dual-monitor-kvm-switch-4-displayport-pcs-2-displayport-monitors-updated-4k-60hz-support-cascading-for-quad-monitor-hdr-10-hdcp-2-2-b.jpg?v=1637964889) 
 
-Tesmart https://www.tesmart.com/collections/dual-monitor/products/4-port-dual-monitor-kvm-switch-hdmi-usb-c-4k60hz-with-usb-hub
+## Supported models
+
+Tesmart sells many KVM models (HDMI, DisplayPort, USB-C; 2 or 4 PCs; 1 or 2 monitors), and the serial commands are not identical across them. This repo was built and tested against:
+
+- **[DKS402-E23-USBK](https://www.tesmart.com/products/dks402-e23)**: 4 PCs, 2 monitors, DisplayPort 4K60Hz with EDID (older part number PKS0802A10)
+- **HKS0802A10**: 4 PCs, 2 monitors, HDMI (discontinued; the current HDMI equivalent is the HKS402-E23)
+
+Other 4×2 dual-monitor models, such as the [DKS402-P23](https://www.tesmart.com/products/dks402-p23) (DisplayPort) and [HKS402-P24](https://www.tesmart.com/products/hks402-p24) (HDMI), may use the same protocol but are untested. Check your model's manual before relying on the command table below.
 
 
 This repo contains a collection of code and examples to interface with tesmart devices using a varriety of interfaces
