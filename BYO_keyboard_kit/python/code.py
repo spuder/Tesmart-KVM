@@ -37,10 +37,10 @@ UART_COMMANDS = {
 
 # The KVM reports channel changes as ASCII lines, e.g. "Set ch is 2\r\r\n" (0-based).
 # Switching both outputs (front-panel 1-4, IR 1-4, serial switch) sends the line 2-3
-# times within a few ms. Output A/B (front panel or IR) sends it once and doesn't say
+# times in quick succession. Output A/B (front panel or IR) sends it once and doesn't say
 # which output changed; since those buttons step to the next PC, we infer the output.
 CHANNEL_PREFIX = "Set ch is "
-PAIR_WINDOW = 0.1  # seconds to wait for a second "Set ch" line
+PAIR_WINDOW = 0.25  # seconds to wait for the rest of a "Set ch" burst (serial echoes can lag >100 ms)
 OWN_COMMAND_WINDOW = 1.0  # seconds a single "Set ch" is attributed to our last command
 
 DEBOUNCE_TIME = 0.15
