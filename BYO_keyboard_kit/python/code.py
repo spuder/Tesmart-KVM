@@ -36,8 +36,9 @@ UART_COMMANDS = {
 }
 
 # The KVM reports channel changes as ASCII lines, e.g. "Set ch is 2\r\r\n" (0-based).
-# Switching both outputs (front-panel 1-4) sends the line twice within a few ms;
-# Output A/B buttons send it once and don't say which output changed.
+# Switching both outputs (front-panel 1-4, IR 1-4, serial switch) sends the line 2-3
+# times within a few ms. Output A/B (front panel or IR) sends it once and doesn't say
+# which output changed; since those buttons step to the next PC, we infer the output.
 CHANNEL_PREFIX = "Set ch is "
 PAIR_WINDOW = 0.1  # seconds to wait for a second "Set ch" line
 OWN_COMMAND_WINDOW = 1.0  # seconds a single "Set ch" is attributed to our last command
@@ -100,6 +101,20 @@ def handle_kvm_line(line, now):
                 pending_since = now
             pending_channels.append(channel)
 
+def changed_output(channel, now):
+    """Return "A" or "B": which output a single "Set ch" line most likely came from"""
+    if now - last_command_time < OWN_COMMAND_WINDOW:
+        if last_command_key == 3:
+            return "A"
+        if last_command_key == 4:
+            return "B"
+    a_next = (primary_display + 1) % len(COLORS)
+    b_next = (secondary_display + 1) % len(COLORS)
+    if channel == b_next and channel != a_next:
+        return "B"
+    # A's next PC, or ambiguous (both outputs on the same PC, or state drifted): guess A
+    return "A"
+
 def apply_pending_channels(now):
     """Once the pair window closes, sync display state with what the KVM reported"""
     global primary_display, secondary_display
@@ -110,13 +125,13 @@ def apply_pending_channels(now):
         # Both outputs switched to the same PC
         primary_display = channel
         secondary_display = channel
-    elif last_command_key == 4 and now - last_command_time < OWN_COMMAND_WINDOW:
+    elif changed_output(channel, now) == "B":
         secondary_display = channel
     else:
-        # Our cycle-primary command, or a front-panel Output A/B press (indistinguishable)
         primary_display = channel
     pending_channels.clear()
     update_led_color()
+    print(f"STATE: A=PC{primary_display + 1} B=PC{secondary_display + 1}")
 
 # Initialize LED color
 update_led_color()

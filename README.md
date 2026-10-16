@@ -63,9 +63,19 @@ Tesmart's documentation says the KVM sends nothing back over serial, but it does
 Notes:
 
 - The channel number starts at 0, so `Set ch is 0` means PC 1.
-- The front-panel 1–4 buttons switch both outputs, so `Set ch is N` arrives twice, a few ms apart.
-- The Output A and Output B buttons send `Set ch is N` once and don't say which output changed.
+- How many times `Set ch is N` repeats depends on what triggered the switch:
+
+  | Trigger | `Set ch is N` lines |
+  | --- | --- |
+  | Serial command `AA BB 03 01 0N EE` | 3 |
+  | Front-panel 1–4 buttons | 2 |
+  | Output A or Output B button | 1 |
+
+  The lines in a burst arrive a few ms apart, and the IR remote's buttons weren't measured separately.
+- The Output A and Output B buttons don't say which output changed. Because they step that output to the next PC, firmware that knows both outputs' current PCs can usually work out which one moved. When both outputs are on the same PC it has to guess.
 - The auto-switch (scan) button produced no output in testing.
+
+> **No query command on this model.** Some Tesmart switches answer `AA BB 03 10 00 EE` with the active input. The DKS402-E23-USBK sends nothing back, so the only way to track state is to listen for the messages above.
 
 `BYO_keyboard_kit/python/code.py` reads these lines to keep its LED in sync with the KVM.
 
