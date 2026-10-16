@@ -47,6 +47,38 @@ Buadrate: 9600
 
 Note: I spoke with support and it is not currently possible to emulate the functionality of the Output A and Output B buttons exactly. You can get close by using ` AA BB 03 03 01 EE` and `AA BB 03 04 01 EE` to toggle output A and B between all inputs. 
 
+### KVM serial output (undocumented)
+
+Tesmart's documentation says the KVM sends nothing back over serial, but it does. Whenever the input changes, from the front panel or from a serial command, the KVM's TX line sends plain ASCII status lines at 9600 baud, 8N1. Captured on a DKS402-E23-USBK:
+
+| Message | Hex | Meaning |
+| --- | --- | --- |
+| `Set ch is 0\r\r\n` | `53 65 74 20 63 68 20 69 73 20 30 0D 0D 0A` | An output switched to PC 1 |
+| `Set ch is 1\r\r\n` | `53 65 74 20 63 68 20 69 73 20 31 0D 0D 0A` | An output switched to PC 2 |
+| `Set ch is 2\r\r\n` | `53 65 74 20 63 68 20 69 73 20 32 0D 0D 0A` | An output switched to PC 3 |
+| `Set ch is 3\r\r\n` | `53 65 74 20 63 68 20 69 73 20 33 0D 0D 0A` | An output switched to PC 4 |
+| `Querry pc LED\r\r\n` | `51 75 65 72 72 79 20 70 63 20 4C 45 44 0D 0D 0A` | Follows about 0.7 s after a switch (the misspelling is the KVM's) |
+| `Write EEPROM \r\n` | `57 72 69 74 65 20 45 45 50 52 4F 4D 20 0D 0A` | The KVM has settled and saved its state (note the trailing space) |
+
+Notes:
+
+- The channel number starts at 0, so `Set ch is 0` means PC 1.
+- How many times `Set ch is N` repeats depends on what triggered the switch:
+
+  | Trigger | `Set ch is N` lines |
+  | --- | --- |
+  | Serial command `AA BB 03 01 0N EE` | 3 |
+  | Front-panel 1–4 buttons | 2 |
+  | Output A or Output B button | 1 |
+
+  The lines in a burst arrive a few ms apart, and the IR remote's buttons weren't measured separately.
+- The Output A and Output B buttons don't say which output changed. Because they step that output to the next PC, firmware that knows both outputs' current PCs can usually work out which one moved. When both outputs are on the same PC it has to guess.
+- The auto-switch (scan) button produced no output in testing.
+
+> **No query command on this model.** Some Tesmart switches answer `AA BB 03 10 00 EE` with the active input. The DKS402-E23-USBK sends nothing back, so the only way to track state is to listen for the messages above.
+
+`BYO_keyboard_kit/python/code.py` reads these lines to keep its LED in sync with the KVM.
+
 The tesmart comes with a Pheonix connector. You will need a Serial to pheonix cable
 
 ![](https://imgur.com/lg1xJxe.jpg)
