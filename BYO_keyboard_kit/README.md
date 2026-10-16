@@ -36,7 +36,7 @@ Download the library bundle from [here](https://circuitpython.org/libraries)
 
 Once circuit python is running on the board, a new flash device will appear on your desktop. 
 
-1. Copy `adafruit_hid/`, `adafruit_dotstar.mpy` and `adafruit_matrixkeypad.mpy` from the downloaded circuitpython zip to the `lib` folder on the device
+1. Copy `adafruit_hid/` and `adafruit_dotstar.mpy` from the downloaded circuitpython zip to the `lib` folder on the device
 2. Edit `code.py` on the flash device
 
 The code will load instantly and automatically reboot the micro controller

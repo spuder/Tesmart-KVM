@@ -1,19 +1,18 @@
 import time
 import board
-import digitalio
-import adafruit_matrixkeypad
 import busio
+import keypad
 import adafruit_dotstar as dotstar
 
 # Initial delay for stable startup
 time.sleep(1)
 
 # Hardware initialization
-cols = [digitalio.DigitalInOut(x) for x in (board.D11, board.D12, board.D13)]
-rows = [digitalio.DigitalInOut(x) for x in (board.D9, board.D10)]
-keys = ((0, 1, 2), (3, 4, 5))
-
-keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
+# Built-in debounced scanner; key numbers are row * 3 + column (0-2 top, 3-5 bottom)
+keys = keypad.KeyMatrix(
+    row_pins=(board.D9, board.D10),
+    column_pins=(board.D11, board.D12, board.D13),
+)
 uart = busio.UART(board.D1, board.D0, baudrate=9600)
 dots = dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.1)
 
@@ -39,9 +38,6 @@ UART_COMMANDS = {
 primary_display = 0
 secondary_display = 1
 
-# Initialize LED color
-dots[0] = COLORS[primary_display]
-
 def send_uart_message(command_key):
     """Send UART message with error handling"""
     try:
@@ -53,40 +49,27 @@ def update_led_color():
     """Update DotStar LED color based on primary display"""
     dots[0] = COLORS[primary_display]
 
+# Initialize LED color
+update_led_color()
+
 # Main loop
-last_pressed_keys = []
-last_key_time = 0
-DEBOUNCE_TIME = 0.15
-
 while True:
-    pressed_keys = keypad.pressed_keys
-    now = time.monotonic()
+    event = keys.events.get()
+    if event is None or not event.pressed:
+        time.sleep(0.01)
+        continue
 
-    # Only act on newly pressed keys (not keys held from previous loop)
-    new_keys = [k for k in pressed_keys if k not in last_pressed_keys]
+    key = event.key_number
 
-    if new_keys and (now - last_key_time) > DEBOUNCE_TIME:
-        key = new_keys[0]
-        last_key_time = now
+    if key <= 2:  # Keys 0, 1, 2: Set both displays to same value
+        primary_display = key
+        secondary_display = key
+    elif key == 3:  # Cycle primary display
+        primary_display = (primary_display + 1) % 4
+    elif key == 4:  # Cycle secondary display
+        secondary_display = (secondary_display + 1) % 4
+    elif key == 5:  # Swap displays
+        primary_display, secondary_display = secondary_display, primary_display
 
-        if key <= 2:  # Keys 0, 1, 2: Set both displays to same value
-            primary_display = key
-            secondary_display = key
-            update_led_color()
-            send_uart_message(key)
-
-        elif key == 3:  # Cycle primary display
-            primary_display = (primary_display + 1) % 4
-            update_led_color()
-            send_uart_message(3)
-
-        elif key == 4:  # Cycle secondary display
-            secondary_display = (secondary_display + 1) % 4
-            send_uart_message(4)
-
-        elif key == 5:  # Swap displays
-            primary_display, secondary_display = secondary_display, primary_display
-            update_led_color()
-            send_uart_message(5)
-
-    last_pressed_keys = pressed_keys
+    update_led_color()
+    send_uart_message(key)
