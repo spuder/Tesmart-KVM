@@ -1,6 +1,7 @@
 """Constants for the Tesmart integration."""
 
 DOMAIN = "tesmart"
+CONF_READ_STATE = "read_state"
 BAUDRATE = 9600
 INPUT_COMMAND = bytes((0xAA, 0xBB, 0x03, 0x01))
 COMMAND_END = 0xEE

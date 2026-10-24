@@ -5,6 +5,15 @@
         "data": {
           "device": "Serial device"
         }
+      },
+      "options": {
+        "step": {
+          "init": {
+            "data": {
+              "read_state": "Read KVM status messages and update the input selector"
+            }
+          }
+        }
       }
     }
   }

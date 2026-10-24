@@ -24,6 +24,7 @@ To add a **Tesmart** integration entry and an **Input** selector:
 2. Restart Home Assistant.
 3. In **Settings → Devices & services**, choose **Add integration**, search for **Tesmart**, and select the AUX-2 RS-232 serial proxy.
 4. Use the resulting **Input** selector to send the command for PC 1–4.
+5. To try reading KVM status messages, open the Tesmart integration's **Configure** options and enable **Read KVM status messages and update the input selector**. Disable this option to use one-shot serial connections and stop listening for incoming status lines.
 
 The integration uses Home Assistant's serial-port selector and serial-proxy transport. It does not open a local `/dev/tty*` path. When asked about native integration options, Home Assistant Core's Serial integration currently exposes only a read-only sensor platform, and the ESPHome serial proxy is a connection transport rather than a user-facing serial-write service. Therefore sending the Tesmart commands through the proxy requires a custom integration.
 
@@ -31,4 +32,6 @@ An alternative without a Python custom integration would be to customize and reb
 
 ## Integration behavior and limitations
 
-The selector sends the documented command to set both KVM outputs to a selected PC. It updates its displayed option after a successful send, but it does not query the KVM or track changes made with the KVM's front-panel buttons or remote. On the tested DKS402-E23-USBK, serial status messages do not identify which output changed, and there is no working query command; the selector cannot reliably represent the KVM's actual state after external changes or a Home Assistant restart.
+When enabled, the integration keeps the serial stream open and listens for the documented `Set ch is N\r\r\n` messages. The channel number is zero-based (`0` means PC 1), and valid messages update the selector. The option is off by default; the integration does not issue a query command at startup, so it only learns a channel when a status message arrives.
+
+The selector sends the documented command to set both KVM outputs to a selected PC. On the tested DKS402-E23-USBK, status messages do not identify which output changed, so a single-output change from the front panel or remote can make the selector show a channel without accurately describing both outputs. The KVM also has no working query command on this model, so the selector cannot reliably recover actual state after a Home Assistant restart until a status message arrives.
