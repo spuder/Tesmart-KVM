@@ -1,20 +1,31 @@
 """Input selection for Tesmart KVMs."""
 
-import serial
+from serialx import Parity, StopBits, open_serial_connection
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_PORT
+from homeassistant.const import CONF_DEVICE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import BAUDRATE, COMMAND_END, DOMAIN, INPUTS, INPUT_COMMAND
 
 
-def _send_input(port: str, input_number: int) -> None:
+async def _send_input(device: str, input_number: int) -> None:
     """Send a source-selection command to the KVM."""
-    with serial.Serial(port=port, baudrate=BAUDRATE, timeout=1) as connection:
-        connection.write(INPUT_COMMAND + bytes((input_number, COMMAND_END)))
+    _, writer = await open_serial_connection(
+        url=device,
+        baudrate=BAUDRATE,
+        bytesize=8,
+        parity=Parity.NONE,
+        stopbits=StopBits.ONE,
+    )
+    try:
+        writer.write(INPUT_COMMAND + bytes((input_number, COMMAND_END)))
+        await writer.drain()
+    finally:
+        writer.close()
+        await writer.wait_closed()
 
 
 async def async_setup_entry(
@@ -23,7 +34,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the Tesmart input selector."""
-    async_add_entities([TesmartInputSelect(hass, entry)])
+    async_add_entities([TesmartInputSelect(entry)])
 
 
 class TesmartInputSelect(SelectEntity):
@@ -33,10 +44,9 @@ class TesmartInputSelect(SelectEntity):
     _attr_name = "Input"
     _attr_options = list(INPUTS)
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+    def __init__(self, entry: ConfigEntry) -> None:
         """Initialize the selector."""
-        self._hass = hass
-        self._port = entry.data[CONF_PORT]
+        self._device = entry.data[CONF_DEVICE]
         self._attr_unique_id = entry.entry_id
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},
@@ -46,8 +56,6 @@ class TesmartInputSelect(SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Switch the KVM to the selected input."""
-        await self._hass.async_add_executor_job(
-            _send_input, self._port, INPUTS[option]
-        )
+        await _send_input(self._device, INPUTS[option])
         self._attr_current_option = option
         self.async_write_ha_state()
