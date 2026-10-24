@@ -47,13 +47,9 @@ Buadrate: 9600
 
 Note: I spoke with support and it is not currently possible to emulate the functionality of the Output A and Output B buttons exactly. You can get close by using ` AA BB 03 03 01 EE` and `AA BB 03 04 01 EE` to toggle output A and B between all inputs. 
 
-### Home Assistant Connect AUX-2
+### Home Assistant
 
-The AUX-2 exposes its RS-232 ports to Home Assistant over the ESPHome serial proxy; it does not need to appear as a local USB serial device. Follow Nabu Casa's [AUX-2 TV/AV receiver guide](https://nabucasa.github.io/public-product-testing-resources/aux-2-52v8mj/02-what-you-can-do/01-starter-projects/02-control-your-tv-and-av-receiver/) and [serial-control guide](https://nabucasa.github.io/public-product-testing-resources/aux-2-52v8mj/02-what-you-can-do/03-controlling-devices-over-serial/), then add the AUX-2 to Home Assistant through the ESPHome integration. The [serial-over-network release notes](https://www.home-assistant.io/blog/2026/05/06/release-20265/#serial-ports-over-the-network-with-esphome) explain how the proxy exposes serial devices (Home Assistant 2026.5 or later). The [published AUX-2 firmware](https://github.com/NabuCasa/aux-2/blob/815fa2a3cb715caa8c8dcd33e21e1776924762ba/packages/aux-2.yaml#L221-L244) exposes two RS-232 ports; it does not document a hardware switch or jumper position for serial mode.
-
-Connect the AUX-2 RS-232 port to the KVM's RS-232 connector, verifying the TX, RX, and ground labels on both devices. The KVM uses 9600 baud, 8N1. The tested serial commands below are model-dependent; see [Supported models](#supported-models).
-
-To add Tesmart to Home Assistant's integration list, copy `custom_components/tesmart` into the Home Assistant `config/custom_components/tesmart` directory and restart Home Assistant. Select **Settings → Devices & services → Add integration → Tesmart**, then choose the AUX-2 RS-232 serial proxy. The resulting **Input** selector sends the command to switch both outputs to PC 1–4.
+For setup and the Home Assistant Connect AUX-2 serial-proxy instructions, see [Home Assistant Connect](HOME_ASSISTANT_CONNECT.md).
 
 ### KVM serial output (undocumented)
 
