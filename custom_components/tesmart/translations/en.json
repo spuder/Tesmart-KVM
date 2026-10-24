@@ -1,0 +1,11 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "port": "Serial port"
+        }
+      }
+    }
+  }
+}
