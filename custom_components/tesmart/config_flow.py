@@ -5,6 +5,7 @@ from typing import Any, override
 import voluptuous as vol
 
 from homeassistant.config_entries import (
+    ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
     OptionsFlow,
@@ -38,17 +39,13 @@ class TesmartConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     @override
-    def async_get_options_flow(config_entry):
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
         """Create the options flow for an existing Tesmart device."""
-        return TesmartOptionsFlow(config_entry)
+        return TesmartOptionsFlow()
 
 
 class TesmartOptionsFlow(OptionsFlow):
     """Configure optional serial feedback reading."""
-
-    def __init__(self, config_entry):
-        """Initialize the options flow."""
-        self.config_entry = config_entry
 
     @override
     async def async_step_init(

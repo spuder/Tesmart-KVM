@@ -24,7 +24,7 @@ from .const import (
     INPUT_COMMAND,
 )
 
-INPUTS_BY_NUMBER = {number: name for name, number in INPUTS.items()}
+INPUTS_BY_CHANNEL = {number - 1: name for name, number in INPUTS.items()}
 
 
 async def _open_serial(device: str) -> tuple[StreamReader, StreamWriter]:
@@ -63,7 +63,7 @@ def _parse_status_line(line: bytes) -> str | None:
     channel = message[len(prefix) :]
     if channel not in {"0", "1", "2", "3"}:
         return None
-    return INPUTS_BY_NUMBER[int(channel)]
+    return INPUTS_BY_CHANNEL[int(channel)]
 
 
 async def async_setup_entry(
